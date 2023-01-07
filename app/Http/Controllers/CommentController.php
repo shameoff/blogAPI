@@ -2,41 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RegisterRequest;
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class AccountController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return JsonResponse
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return "INDEX OF ACCOUNT CONTROLLER";
+        //
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @param RegisterRequest $request
-     * @return JsonResponse
+     * @return \Illuminate\Http\Response
      */
-    public function register(RegisterRequest $request): JsonResponse
+    public function create()
     {
-//        echo $request->validated();
-//        $user = User::create();
-//        var_dump($user);
-//        auth()->login($user);
-//
-        return \response()->json([
-            "message" => 'Registration',
-//            $request->validated(),
-        ]);
-
+        //
     }
 
     /**

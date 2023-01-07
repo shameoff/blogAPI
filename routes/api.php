@@ -14,29 +14,37 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
 
 Route::get("/", function () {
     return "API DOCUMENTATION";
 });
-Route::get("/author/list", "");
 
-Route::get("/comment/{id}/tree", "");
-Route::post("/post/{id}/comment", "");
-Route::put("/api/comment/{id}", "");
-Route::delete("/comment/{id}", "");
+Route::get("/tag", "App\Http\Controllers\PostController@showTags");
+Route::get("/author/list", "App\Http\Controllers\AccountController@showAuthors");
 
-Route::get("/post", "");
-Route::get("/post/{id}", "");
-Route::post("/post/{postId}/like", "");
-Route::delete("/post/{postId}/like", "");
+Route::prefix("/post")->group(function () {
+    Route::get("/", ['uses' => 'PostController@index']);
+    Route::get("/{id}", ['uses' => 'PostController@info']);
+    Route::post("/{id}/comment", ['middleware' => 'auth', 'uses' => 'App\Http\Controllers\PostController@comment']);
+    Route::post("/{postId}/like", ['middleware' => 'auth', 'uses' => 'App\Http\Controllers\PostController@like']);
+    Route::delete("/{postId}/like", ['middleware' => 'auth', 'uses' => 'App\Http\Controllers\PostController@unlike']);
+});
 
-Route::get("/tag", "");
+Route::prefix("/account")->group(function () {
+    Route::get("/", "App\Http\Controllers\AccountController@index");
+    Route::get("/profile", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\AccountController@showProfile"]);
+    Route::put("/profile", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\AccountController@editProfile"]);
+    Route::post("/register", "App\Http\Controllers\AccountController@register");
+    Route::post("/login", "App\Http\Controllers\AccountController@login");
+    Route::post("/logout", "App\Http\Controllers\AccountController@logout");
+});
+Route::prefix("/comment")->group(function (){
+    Route::get("/{id}/tree", "App\Http\Controllers\CommentController@showTree");
+    Route::put("/{id}", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\CommentController@edit"]);
+    Route::delete("/{id}", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\CommentController@delete"]);
+});
 
-Route::post("/account/register", "");
-Route::post("/account/login", "");
-Route::post("/account/logout", "");
-Route::get("/account/profile", "");
-Route::put("/account/profile", "");
+
