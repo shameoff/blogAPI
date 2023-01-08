@@ -14,11 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('comment', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('post_id')->constrained('post');
-            $table->foreignId('parent_id')->nullable()->constrained("comment");
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->constrained('user');
+            $table->foreignUuid('post_id')->constrained('post');
+            $table->uuid("parent_id")->nullable();
             $table->timestamps(false);
+        });
+
+        Schema::table('comment', function (Blueprint $table){
+            $table->foreign('parent_id')->references("id")->on('comment');
         });
     }
 

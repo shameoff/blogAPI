@@ -34,12 +34,12 @@ Route::prefix("/post")->group(function () {
 });
 
 Route::prefix("/account")->group(function () {
-    Route::get("/", "App\Http\Controllers\AccountController@index");
-    Route::get("/profile", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\AccountController@showProfile"]);
-    Route::put("/profile", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\AccountController@editProfile"]);
-    Route::post("/register", "App\Http\Controllers\AccountController@register");
-    Route::post("/login", "App\Http\Controllers\AccountController@login");
-    Route::post("/logout", "App\Http\Controllers\AccountController@logout");
+    Route::get("/", "App\Http\Controllers\UserController@index");
+    Route::get("/profile", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\UserController@showProfile"]);
+    Route::put("/profile", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\UserController@editProfile"]);
+    Route::post("/register", "App\Http\Controllers\UserController@register");
+    Route::post("/login", "App\Http\Controllers\UserController@login");
+    Route::post("/logout", "App\Http\Controllers\UserController@logout");
 });
 Route::prefix("/comment")->group(function (){
     Route::get("/{id}/tree", "App\Http\Controllers\CommentController@showTree");

@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('post-tag', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tag_id')->constrained('tag');
-            $table->foreignId('post_id')->constrained('post');
+            $table->foreignUuid('post_id')->constrained('post');
             $table->timestamps(false);
         });
     }

@@ -2,21 +2,20 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
-    public $table = 'users';
+    use HasFactory, HasUuids;
     /**
-     * The attributes that are mass assignable.
+     * The table associated with the model.
      *
-     * @var array<int, string>
+     * @var string
      */
+    protected $table = 'user';
+    public $timestamps = false;
     protected $fillable = [
         'fullName',
         'birthDate',
@@ -43,8 +42,4 @@ class User extends Authenticatable
     protected $casts = [
 //        'email_verified_at' => 'datetime',
     ];
-
-    public function setPasswordAttribute($value) {
-        $this->attributes['password'] = bcrypt($value);
-    }
 }
