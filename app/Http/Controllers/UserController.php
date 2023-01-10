@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Testing\Fluent\Concerns\Has;
 
 class UserController extends Controller
 {
@@ -15,16 +18,14 @@ class UserController extends Controller
      */
     public function index()
     {
-        return "INDEX OF ACCOUNT CONTROLLER";
+        return response()->json("Oh, no! It's empty! Would you like to try again with longer path?", 404);
     }
 
     /**
-     * Show the form for creating a new resource.
      *
      * @param Request $request
-     * @return JsonResponse
      */
-    public function register(Request $request): JsonResponse
+    public function register(Request $request)
     {
         $data = $request->validate([
             'fullName' => 'required|string',
@@ -34,76 +35,41 @@ class UserController extends Controller
             'email' => 'required|email:rfc,dns|unique:user,email',
             'password' => 'required|min:8',
         ]);
-        User::create($data);
+//        var_dump($data['password']);
+//        $data['password'] = bcrypt($data['password']);
+//        var_dump($data['password']);
+        $user = User::create($data);
 
-        $user = new User([
-            'fullName' => $data['fullName'],
-            'birthDate' => $data['birthDate'],
-            'gender' => $data['gender'],
-            'phoneNumber' => $data['phoneNumber'],
-            'email' => $data['email'],
-            'password' => $data['password']
+        var_dump($user);
+        auth()->login($user);
+
+    }
+
+    /**
+     * Returns token if authentication successful else 401
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function login(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
-        return \response()->json([
-        "message" => 'Registration',
-//          $request->validated(),
-    ]);
+        if (!Auth::attempt($data)) {
+            return response()->json(['error' => 'Wrong email or password!'], 401);
+        }
 
+        /** @var User $user */
+        $user = $request->user();
+        $token = $user->createToken('api')->plainTextToken;
+
+        return response()->json(['token'=> $token]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(User $user)
-    {
-        //
+    public function showProfile(): JsonResponse {
+        $id = Auth::user()->getAuthIdentifier();
+        $columns = (new \App\Models\User)->select(['*'])->where('id', '=', $id)->get(); //Just dynamic call of select in Eloquent
+        return response()->json(...$columns);
     }
 }

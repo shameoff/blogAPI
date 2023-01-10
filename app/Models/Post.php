@@ -7,5 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    use HasFactory;
+    protected $table = 'post';
+//    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'content',
+        'readingTime',
+        'photoPath'
+    ];
+    public $timestamps = true;
 }

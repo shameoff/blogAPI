@@ -9,4 +9,5 @@ class PostController extends Controller
     public function index(){
         return "index of Post Controller";
     }
+
 }

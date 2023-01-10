@@ -28,23 +28,23 @@ Route::get("/author/list", "App\Http\Controllers\AccountController@showAuthors")
 Route::prefix("/post")->group(function () {
     Route::get("/", ['uses' => 'PostController@index']);
     Route::get("/{id}", ['uses' => 'PostController@info']);
-    Route::post("/{id}/comment", ['middleware' => 'auth', 'uses' => 'App\Http\Controllers\PostController@comment']);
-    Route::post("/{postId}/like", ['middleware' => 'auth', 'uses' => 'App\Http\Controllers\PostController@like']);
-    Route::delete("/{postId}/like", ['middleware' => 'auth', 'uses' => 'App\Http\Controllers\PostController@unlike']);
+    Route::post("/{id}/comment", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@comment']);
+    Route::post("/{postId}/like", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@like']);
+    Route::delete("/{postId}/like", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@unlike']);
 });
 
 Route::prefix("/account")->group(function () {
     Route::get("/", "App\Http\Controllers\UserController@index");
-    Route::get("/profile", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\UserController@showProfile"]);
-    Route::put("/profile", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\UserController@editProfile"]);
+    Route::get("/profile", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\UserController@showProfile"]);
+    Route::put("/profile", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\UserController@editProfile"]);
     Route::post("/register", "App\Http\Controllers\UserController@register");
     Route::post("/login", "App\Http\Controllers\UserController@login");
     Route::post("/logout", "App\Http\Controllers\UserController@logout");
 });
 Route::prefix("/comment")->group(function (){
     Route::get("/{id}/tree", "App\Http\Controllers\CommentController@showTree");
-    Route::put("/{id}", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\CommentController@edit"]);
-    Route::delete("/{id}", ['middleware' => 'auth', 'uses' => "App\Http\Controllers\CommentController@delete"]);
+    Route::put("/{id}", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\CommentController@edit"]);
+    Route::delete("/{id}", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\CommentController@delete"]);
 });
 
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('content');
             $table->integer('readingTime');
-            $table->string('photo');
+            $table->string('photoPath');
             $table->timestamps(false);
         });
     }
