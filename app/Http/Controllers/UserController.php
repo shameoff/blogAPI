@@ -67,6 +67,21 @@ class UserController extends Controller
         return response()->json(['token'=> $token]);
     }
 
+
+    /**
+     * Returns message if logged out successful
+     * @return JsonResponse
+     */
+    public function logout(): JsonResponse {
+        Auth::guard('web')->logout();
+        return response()->json(['message' => 'Successfully logged out', 'status'=>200], 200);
+    }
+
+
+    /**
+     * Returns info about authorized user
+     * @return JsonResponse
+     */
     public function showProfile(): JsonResponse {
         $id = Auth::user()->getAuthIdentifier();
         $columns = (new \App\Models\User)->select(['*'])->where('id', '=', $id)->get(); //Just dynamic call of select in Eloquent

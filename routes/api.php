@@ -39,7 +39,7 @@ Route::prefix("/account")->group(function () {
     Route::put("/profile", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\UserController@editProfile"]);
     Route::post("/register", "App\Http\Controllers\UserController@register");
     Route::post("/login", "App\Http\Controllers\UserController@login");
-    Route::post("/logout", "App\Http\Controllers\UserController@logout");
+    Route::post("/logout", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\UserController@logout"]);
 });
 Route::prefix("/comment")->group(function (){
     Route::get("/{id}/tree", "App\Http\Controllers\CommentController@showTree");

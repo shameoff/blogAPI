@@ -20,3 +20,5 @@ Content-Type: application/json
 }
 
 ###
+
+POST http://myblog/api/account/logout
