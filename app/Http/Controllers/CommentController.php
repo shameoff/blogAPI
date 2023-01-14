@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -21,9 +23,16 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($postId, Request $request)
     {
-        //
+        $userId = Auth::user()['id'];
+        $data = $request->validate([
+            'parentId' => "uuid",
+            'content' => "required|text"
+        ]);
+        $content = $data['content'];
+        $parentId = $data['parentId'];
+        $result = Comment::create(['user_id' => $userId, 'post_id' => $postId, 'parent_id']);
     }
 
     /**

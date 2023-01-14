@@ -16,10 +16,11 @@ return new class extends Migration
         Schema::create('post', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('title');
+            $table->foreignUuid('author_id')->constrained('user');
             $table->text('content');
             $table->integer('readingTime');
             $table->string('photoPath');
-            $table->timestamps(false);
+            $table->timestamps(true);
         });
     }
 

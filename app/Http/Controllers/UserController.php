@@ -14,18 +14,19 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function index()
     {
-        return response()->json("Oh, no! It's empty! Would you like to try again with longer path?", 404);
+        return response()->json(['error' => "Oh, no! It's empty! Would you like to try again with longer path?"], 404);
     }
 
     /**
      *
      * @param Request $request
+     * @return JsonResponse
      */
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
             'fullName' => 'required|string',
@@ -35,13 +36,20 @@ class UserController extends Controller
             'email' => 'required|email:rfc,dns|unique:user,email',
             'password' => 'required|min:8',
         ]);
-//        var_dump($data['password']);
-//        $data['password'] = bcrypt($data['password']);
-//        var_dump($data['password']);
-        $user = User::create($data);
+        $data['password'] = bcrypt($data['password']);
+        /**
+         * @var User $user
+         */
+        User::create($data);
 
-        var_dump($user);
-        auth()->login($user);
+        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            return response()->json(['error' => 'Something wrong in MY program. It doesn\'t depend on you! Please, contact me! eshamov0303016@gmail.com', $data], 500);
+        }
+
+        $user = $request->user();
+        $token = $user->createToken('api')->plainTextToken;
+
+        return response()->json(['token' => $token]);
 
     }
 
@@ -57,14 +65,14 @@ class UserController extends Controller
             'password' => 'required',
         ]);
         if (!Auth::attempt($data)) {
-            return response()->json(['error' => 'Wrong email or password!'], 401);
+            return response()->json(['error' => 'Wrong email or password!', $data], 401);
         }
 
         /** @var User $user */
         $user = $request->user();
         $token = $user->createToken('api')->plainTextToken;
 
-        return response()->json(['token'=> $token]);
+        return response()->json(['token' => $token]);
     }
 
 
@@ -72,9 +80,10 @@ class UserController extends Controller
      * Returns message if logged out successful
      * @return JsonResponse
      */
-    public function logout(): JsonResponse {
+    public function logout(): JsonResponse
+    {
         Auth::guard('web')->logout();
-        return response()->json(['message' => 'Successfully logged out', 'status'=>200], 200);
+        return response()->json(['message' => 'Successfully logged out', 'status' => 200], 200);
     }
 
 
@@ -82,9 +91,31 @@ class UserController extends Controller
      * Returns info about authorized user
      * @return JsonResponse
      */
-    public function showProfile(): JsonResponse {
+    public function showProfile(): JsonResponse
+    {
         $id = Auth::user()->getAuthIdentifier();
-        $columns = (new \App\Models\User)->select(['*'])->where('id', '=', $id)->get(); //Just dynamic call of select in Eloquent
+        $columns = User::where('id', '=', $id)->get();
         return response()->json(...$columns);
+
+    }
+
+    public function editProfile(Request $request): JsonResponse
+    {
+        $id = Auth::user()->getAuthIdentifier();
+        $data = $request->validate([
+            'fullName' => 'string',
+            'birthDate' => 'date',
+            'gender' => 'in:Female,Male',
+            'phoneNumber' => 'string|numeric',
+            'email' => 'email:rfc,dns|unique:user,email',
+        ]);
+
+        User::where('id', $id)->update([$data]);
+        return response()->json($data);
+    }
+
+    public function showAuthors(Request $request){
+
+//        User::where()
     }
 }

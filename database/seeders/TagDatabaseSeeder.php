@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Tag;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
-class UserDatabaseSeeder extends Seeder
+class TagDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,10 +15,8 @@ class UserDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->create([
-            'fullName' => 'god',
-            'email' => 'god@godmail.com',
-            'password' => Hash::make('godpass')
+        Tag::factory()->create([
+            'name' => fake()->word()
         ]);
     }
 }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('user');
             $table->foreignUuid('post_id')->constrained('post');
             $table->uuid("parent_id")->nullable();
+            $table->text('content');
             $table->timestamps(false);
         });
 

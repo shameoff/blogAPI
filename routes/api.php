@@ -26,8 +26,8 @@ Route::get("/tag", "App\Http\Controllers\PostController@showTags");
 Route::get("/author/list", "App\Http\Controllers\AccountController@showAuthors");
 
 Route::prefix("/post")->group(function () {
-    Route::get("/", ['uses' => 'PostController@index']);
-    Route::get("/{id}", ['uses' => 'PostController@info']);
+    Route::get("/", ['uses' => 'App\Http\Controllers\PostController@get']);
+    Route::get("/{id}", ['uses' => 'App\Http\Controllers\PostController@getDetailed']);
     Route::post("/{id}/comment", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@comment']);
     Route::post("/{postId}/like", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@like']);
     Route::delete("/{postId}/like", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@unlike']);

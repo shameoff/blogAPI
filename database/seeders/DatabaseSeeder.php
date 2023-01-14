@@ -14,9 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        $userSeeder = new UserDatabaseSeeder;
+        $userSeeder->run();
+        $tagSeeder = new TagDatabaseSeeder;
+        $tagSeeder->run();
+        $postSeeder = new PostDatabaseSeeder;
+        $postSeeder->run();
 
-         $userSeeder = new UserDatabaseSeeder;
-         $userSeeder->run();
+
     }
 }
