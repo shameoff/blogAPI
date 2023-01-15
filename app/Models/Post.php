@@ -14,7 +14,6 @@ class Post extends Model
 {
     use HasFactory, HasUuids;
     protected $table = 'post';
-//    public $incrementing=false;
     protected $keyType='string';
     public $timestamps = true;
 

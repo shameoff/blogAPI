@@ -28,7 +28,7 @@ Route::get("/author/list", "App\Http\Controllers\AccountController@showAuthors")
 Route::prefix("/post")->group(function () {
     Route::get("/", ['uses' => 'App\Http\Controllers\PostController@get']);
     Route::get("/{id}", ['uses' => 'App\Http\Controllers\PostController@getDetailed']);
-    Route::post("/{id}/comment", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@comment']);
+    Route::post("/{id}/comment", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\CommentController@create']);
     Route::post("/{postId}/like", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@like']);
     Route::delete("/{postId}/like", ['middleware' => 'auth:sanctum', 'uses' => 'App\Http\Controllers\PostController@unlike']);
 });
@@ -42,7 +42,7 @@ Route::prefix("/account")->group(function () {
     Route::post("/logout", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\UserController@logout"]);
 });
 Route::prefix("/comment")->group(function (){
-    Route::get("/{id}/tree", "App\Http\Controllers\CommentController@showTree");
+    Route::get("/{id}/tree", "App\Http\Controllers\CommentController@show");
     Route::put("/{id}", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\CommentController@edit"]);
     Route::delete("/{id}", ['middleware' => 'auth:sanctum', 'uses' => "App\Http\Controllers\CommentController@delete"]);
 });

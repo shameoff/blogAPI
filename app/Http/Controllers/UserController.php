@@ -82,7 +82,7 @@ class UserController extends Controller
      */
     public function logout(): JsonResponse
     {
-        Auth::guard('web')->logout();
+        Auth::guard('sanctum')->logout();
         return response()->json(['message' => 'Successfully logged out', 'status' => 200], 200);
     }
 

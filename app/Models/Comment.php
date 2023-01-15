@@ -23,5 +23,6 @@ class Comment extends Model
         "user_id",
         "post_id",
         "parent_id",
+        "content"
     ];
 }

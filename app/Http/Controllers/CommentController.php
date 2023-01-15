@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Post;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
@@ -11,7 +14,7 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -20,39 +23,44 @@ class CommentController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param string $postId
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function create($postId, Request $request)
+    public function create(string $postId, Request $request): JsonResponse
     {
         $userId = Auth::user()['id'];
         $data = $request->validate([
+            'postId' => "uuid",
             'parentId' => "uuid",
-            'content' => "required|text"
+            'content' => "required|min:3|max:1000"
         ]);
         $content = $data['content'];
-        $parentId = $data['parentId'];
-        $result = Comment::create(['user_id' => $userId, 'post_id' => $postId, 'parent_id']);
-    }
+        $parentId = $data['parentId'] ?? null;
+        if (Post::where('id', '=', $postId)->get()->isEmpty()){
+            return response()->json(['message' => 'Invalid post id'],400);
+        }
+        if ($parentId != null and Comment::where('id', '=', $parentId)->get()->isEmpty()){
+            return response()->json(['message' => 'Invalid parent comment id'],400);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        $result = Comment::create([
+            'user_id' => $userId,
+            'post_id' => $postId,
+            'parent_id' => $parentId,
+            'content' => $content]);
+        if ($result){
+            return response()->json(['message' => "Comment was created successfully"]);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param string $id
+     * @return Response
      */
-    public function show($id)
+    public function show(string $id)
     {
         //
     }
@@ -60,34 +68,36 @@ class CommentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param string $id
+     * @return JsonResponse
      */
-    public function edit($id)
+    public function edit(string $id, Request $request)
     {
-        //
+        $data = $request->validate([
+            'content' => "required|min:3|max:1000"
+        ]);
+        $result = Comment::where('id', '=', $id)->update([$data]);
+        if ($result){
+            return response()->json(['message' => 'Comment was updated successfully']);
+        } else {
+            return response()->json(['message' => 'Something wrong'], 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param string $id
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function delete(string $id)
     {
-        //
+        $result = Comment::where('id', '=', $id)->delete();
+        if ($result){
+            return response()->json(['message' => 'Comment was deleted successfully']);
+        } else {
+            return response()->json(['message' => 'Something wrong'], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
