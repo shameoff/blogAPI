@@ -17,7 +17,7 @@ class PostDatabaseSeeder extends Seeder
         Post::factory(10)->create([
             'title' => fake()->title(),
             'content' => fake()->text(),
-            'author_id' => '9839bd3a-00b8-4d37-947c-75750cb94721',
+            'author_id' => '984d6455-2c1b-45f7-a0ac-591530b15d81',
             'readingTime' => rand(1, 360),
             'photoPath' => fake()->filePath(),
         ]);

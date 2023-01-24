@@ -20,4 +20,7 @@ class Like extends Model
         'user_id',
         'post_id',
     ];
+    public function post(){
+        $this->belongsTo('Post', 'post_id');
+    }
 }

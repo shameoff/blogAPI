@@ -15,15 +15,8 @@ use function Symfony\Component\VarDumper\Dumper\esc;
 
 class PostController extends Controller
 {
-    public function index()
-    {
-        return "index of Post Controller";
-    }
 
-    public function create()
-    {
-
-    }
+//    public function create() {}
 
     public function get()
     {

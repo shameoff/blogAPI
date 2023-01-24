@@ -20,6 +20,7 @@ return new class extends Migration
             $table->uuid("parent_id")->nullable();
             $table->text('content');
             $table->timestamps(false);
+            $table->softDeletes();
         });
 
         Schema::table('comment', function (Blueprint $table){

@@ -20,4 +20,8 @@ class Tag extends Model
     public $timestamps = true;
 
     protected $fillable = ["name"];
+
+    public function posts(){
+        return $this->belongsToMany('Post', 'post-tag');
+    }
 }

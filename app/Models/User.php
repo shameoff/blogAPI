@@ -53,4 +53,8 @@ class User extends Authenticatable
     ];
 
     // Rest omitted for brevity
+    public function posts()
+    {
+        return $this->hasMany('Post', 'author_id');
+    }
 }

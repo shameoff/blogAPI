@@ -116,6 +116,6 @@ class UserController extends Controller
 
     public function showAuthors(Request $request){
 
-//        User::where()
+        User::get(['fullName', 'birthDate', 'gender', 'created_at']);
     }
 }

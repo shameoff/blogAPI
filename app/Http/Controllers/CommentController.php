@@ -9,12 +9,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNull;
 
 class CommentController extends Controller
 {
 
     /**
-     * Show the form for creating a new resource.
+     * Create comment for certain post from request.
      * @param string $postId
      * @param Request $request
      * @return JsonResponse
@@ -46,34 +48,50 @@ class CommentController extends Controller
         else return response()->json(['message' => "Something went wrong. Try again later"], 500);
     }
 
+    private function getChildComments(Comment $comment): array
+    {
+        $children = $comment->children()->withTrashed()->where('post_id', '=', $comment->post_id)
+            ->join('user', 'user_id', '=', 'user.id')
+            ->get(['comment.id', 'post_id', 'parent_id', 'comment.created_at', 'content', 'comment.updated_at', 'deleted_at', 'user_id', 'fullName']);
+        $fixed_children = [];
+
+        /** @var Comment $child */
+        foreach ($children as $child)
+            $fixed_children[] = [
+                'id' => $child->id,
+                'createTime' => $child->created_at,
+                'content' => isNull($child->deleted_at) ? $child->content : 'DELETED',
+                'modifiedDate' => $child->updated_at,
+                'deletedDate' => $child->deleted_at,
+                'authorId' => $child->user_id,
+                'author' => $child->fullName,
+                'subComments' => $this->getChildComments($child)
+            ];
+        return $fixed_children;
+    }
+
     /**
-     * Display the specified resource.
+     * Show all child comments of certain comment in the tree form.
      *
      * @param string $id
      * @return JsonResponse
      */
-    public function show(string $id): JsonResponse
+    public function showTree(string $id): JsonResponse
     {
-        $comment = Comment::where('id', '=', $id)->first();
+        /** @var Comment $comment */
+        $comment = Comment::withTrashed()->where('comment.id', '=', $id)
+            ->join('user', 'user_id', '=', 'user.id')
+            ->first(['comment.id', 'post_id', 'parent_id', 'comment.created_at', 'content', 'comment.updated_at', 'deleted_at', 'user_id', 'fullName']);
+
         if (!isset($comment)) {
             return response()->json(['message' => "Comment with id = $id not found"], 404);
         }
-        $authorName = User::where('id', '=', $comment->user_id)->first('fullName')->fullName;
-        $subCommentsArray = Comment::where('parent_id', '=', $comment->id)->get();
-        return response()->json([
-            'id' => $comment->id,
-            'createTime' => $comment->created_at,
-            'content' => $comment->content,
-            'modifiedDate' => $comment->updated_at,
-            'deletedDate' => "THIS FIELD IS NOT CREATED YET",
-            'authorId' => $comment->authorId,
-            'author' => $authorName,
-            'subComments' => $subCommentsArray
-        ]);
+
+        return response()->json($this->getChildComments($comment));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Edit fields sent in a request in the comment with certain id
      *
      * @param string $id
      * @param Request $request
@@ -93,7 +111,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Delete a comment with certain id
      *
      * @param string $id
      * @return JsonResponse
