@@ -31,15 +31,15 @@ class Post extends Model
 
     public function likes()
     {
-        return $this->hasMany('Likes', 'post_id');
+        return $this->hasMany('App\Models\Like', 'post_id');
     }
 
     public function comments(){
-        return $this->hasMany('Comments', 'post_id');
+        return $this->hasMany('App\Models\Comment', 'post_id');
     }
 
     public function tags(){
-        return $this->belongsToMany('Tag', 'post-tag');
+        return $this->belongsToMany('App\Models\Tag', 'post-tag');
     }
 
 }
