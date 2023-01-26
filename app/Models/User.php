@@ -24,7 +24,7 @@ class User extends Authenticatable
     protected $keyType='string';
 
     protected $table = 'user';
-    public $timestamps = false;
+    public $timestamps = true;
     protected $fillable = [
         'fullName',
         'birthDate',

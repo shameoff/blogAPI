@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\Fluent\Concerns\Has;
 
@@ -114,8 +115,23 @@ class UserController extends Controller
         return response()->json($data);
     }
 
-    public function showAuthors(Request $request){
-
-        User::get(['fullName', 'birthDate', 'gender', 'created_at']);
+    /**
+     * Returns an array of users who have at least 1 post
+     * @return JsonResponse
+     */
+    public function showAuthors()
+    {
+        $authors = DB::select('SELECT fullName, gender, birthDate, COUNT(posts_table.post_id) as posts, COUNT(likesPerPost) as likes, created_at as created
+                FROM user
+                         JOIN (SELECT author_id, id AS post_id
+                               FROM post) as posts_table
+                              on author_id = user.id
+                         LEFT JOIN (SELECT post_id, COUNT(*) as likesPerPost
+                                    FROM `like`
+                                    GROUP BY post_id) as likes_count
+                                   on likes_count.post_id = posts_table.post_id
+                GROUP BY fullName, gender, birthDate, created_at');
+    return response()->json($authors);
     }
+
 }

@@ -14,10 +14,10 @@ class PostDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Post::factory(10)->create([
+        Post::factory(5)->create([
             'title' => fake()->title(),
             'content' => fake()->text(),
-            'author_id' => '984d6455-2c1b-45f7-a0ac-591530b15d81',
+            'author_id' => '984ff49c-c55e-4eaf-b6f1-805c1c6d85b5',
             'readingTime' => rand(1, 360),
             'photoPath' => fake()->filePath(),
         ]);

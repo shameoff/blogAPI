@@ -26,7 +26,7 @@ Route::get("/", function () {
 });
 
 Route::get("/tag", "App\Http\Controllers\PostController@showTags");
-Route::get("/author/list", "App\Http\Controllers\AccountController@showAuthors");
+Route::get("/author/list", "App\Http\Controllers\UserController@showAuthors");
 
 Route::prefix("/post")->group(function () {
     Route::get("/", [PostController::class, 'get']);

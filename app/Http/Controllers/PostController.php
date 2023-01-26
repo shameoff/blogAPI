@@ -20,8 +20,14 @@ class PostController extends Controller
 
     public function get()
     {
-        $columns = Post::where('id', '=', '*')->get();
-        return response()->json(...$columns);
+        $posts = Post::get();
+        if (request()->has('author')){
+            $author_name = request()->author;
+            $author_ids = User::where('fullName', 'LIKE', "%${author_name}%")->get();
+
+        };
+
+        return response()->json(request()->all());
     }
 
     public function getDetailed($id, Request $request)
