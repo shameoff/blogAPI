@@ -84,7 +84,7 @@ class CommentController extends Controller
             ->first(['comment.id', 'post_id', 'parent_id', 'comment.created_at', 'content', 'comment.updated_at', 'deleted_at', 'user_id', 'fullName']);
 
         if (!isset($comment)) {
-            return response()->json(['message' => "Comment with id = $id not found"], 404);
+            return response()->json(['message' => "Parent comment with id = $id not found. Make sure that uuid is correct"], 404);
         }
 
         return response()->json($this->getChildComments($comment));
