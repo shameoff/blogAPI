@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Post extends Model
 {
-    use HasFactory, HasUuids;
+
+    use HasFactory, HasUuids, Filterable;
+
     protected $table = 'post';
     protected $keyType='string';
     public $timestamps = true;
@@ -24,9 +27,10 @@ class Post extends Model
         'photoPath'
     ];
 
-    public function user()
+    protected $hidden = ['pivot'];
+    public function author()
     {
-        return $this->belongsTo('User', 'author_id');
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function likes()

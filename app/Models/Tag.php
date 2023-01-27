@@ -18,6 +18,7 @@ class Tag extends Model
     protected $keyType='string';
     protected $table = 'tag';
     public $timestamps = true;
+    protected $hidden = ['pivot'];
 
     protected $fillable = ["name"];
 

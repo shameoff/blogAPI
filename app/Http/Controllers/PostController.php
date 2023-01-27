@@ -20,15 +20,24 @@ class PostController extends Controller
 
 //    public function create() {}
 
-    public function get()
+    public function get(Request $request)
     {
-        $posts = Post::get();
-        if (request()->has('author')){
-            $author_name = request()->author;
-            $author_ids = User::where('fullName', 'LIKE', "%${author_name}%")->get();
-        };
 
-        return response()->json(request()->all());
+        $posts = Post::filter($request->all())->get(['*']);
+
+        $myId = Auth::guard('sanctum')->user()->id ?? null;
+
+        $postIdsLikedByMe = $myId != null ?
+            array_map(function ($elem){
+                return $elem['post_id'];
+            }, Like::where('user_id', '=', $myId)->get('post_id')->toArray()) : [];
+
+        foreach ($posts as $post){
+            $post['hasLike'] = in_array($post->id, $postIdsLikedByMe);
+            $post['tags'] = $post->tags()->get(['tag.id', 'name', 'tag.created_at']);
+        }
+
+        return response()->json($posts);
     }
 
     /**
@@ -43,18 +52,23 @@ class PostController extends Controller
     {
 
         $request->user('sanctum');
+
         $post = Post::where('id', '=', $id)->first();
         $authorName = User::where('id', '=', $post['author_id'])->first('fullName')->fullName;
+
         $likesAmount = Like::where('post_id', '=', $post->id)->count();
         $hasLike = Auth::guard('sanctum')->user() != null &&
             Like::where('post_id', '=', $post->id, 'and')->
             where('user_id', '=', Auth::guard('sanctum')->
             user()->getAuthIdentifier())->first() != null;
+
         $commentsAmount = Comment::where('post_id', '=', $post->id)->count();
-        // Вот эту штуку надо поправить
-        $commentsArray = Comment::where('post_id', '=', $post->id)->get();
-        // А тут вообще написать еще одну модель и работать с ней
-        $tagsArray = [];
+        $commentsArray = $post->comments()->withTrashed()->where('parent_id', '=', null)->get();
+        foreach ($commentsArray as $comment){
+            $comment['subComments'] = $comment->children()->count();
+        }
+
+        $tagsArray = $post->tags()->get(['tag.id', 'name', 'tag.created_at']);
 
         return response()->json([
             'id' => $post['id'],
