@@ -89,13 +89,13 @@ class PostFilter extends ModelFilter
     {
         switch ($sortType) {
             case "CreateDesc":
-                return $this->orderBy('created_at', 'desc');
+                return $this->orderBy('createTime', 'desc');
             case "CreateAsc":
-                return $this->orderBy('created_at');
+                return $this->orderBy('createTime');
             case "LikeAsc":
-
+                return $this->orderBy('likes');
             case "LikeDesc":
-                return $this->orderByRaw('', 'desc');
+                return $this->orderBy('likes', 'desc');
         }
     }
 }
